@@ -3,16 +3,20 @@ import { useDrag } from "react-dnd";
 import { ItemTypes } from "../../types";
 import "./elements.css";
 
+// Image component displayed in the sidebar, ready to be dragged into the canvas
 export function Image() {
+  // Set up drag behavior using react-dnd
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.IMAGE,
-    item: { type: ItemTypes.IMAGE },
+    type: ItemTypes.IMAGE, // Define the drag type for this item
+    item: { type: ItemTypes.IMAGE }, // Payload sent during drag
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: !!monitor.isDragging(), // Track dragging state for visual feedback
     }),
   }));
 
   const elementRef = useRef<HTMLDivElement>(null);
+
+  // Connect the ref to the drag behavior
   drag(elementRef);
 
   return (
@@ -20,7 +24,7 @@ export function Image() {
       ref={elementRef}
       className="element"
       style={{
-        opacity: isDragging ? 0.5 : 1,
+        opacity: isDragging ? 0.5 : 1, // Reduce opacity while dragging
       }}
     >
       <span className="element-icon">🖼️</span>
