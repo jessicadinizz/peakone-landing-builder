@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { Sidebar } from "./components/editor/Sidebar";
+import { Canvas } from "./components/editor/Canvas";
+import type { CanvasComponent } from "./types";
+import { ItemTypes } from "./types";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [canvasComponents, setCanvasComponents] = useState<CanvasComponent[]>(
+    []
+  );
+
+  const handleDrop = (type: string) => {
+    let content = "Some default text";
+    if (type === ItemTypes.HEADING) content = "New Heading";
+    if (type === ItemTypes.BUTTON) content = "Click me";
+    if (type === ItemTypes.IMAGE) content = "https://placehold.co/600x400";
+
+    const newComponent: CanvasComponent = {
+      id: new Date().getTime(),
+      type: type,
+      content: content,
+    };
+    setCanvasComponents((prev) => [...prev, newComponent]);
+  };
+
+  const updateComponentContent = (id: number, newContent: string) => {
+    setCanvasComponents((prev) =>
+      prev.map((component) =>
+        component.id === id ? { ...component, content: newContent } : component
+      )
+    );
+  };
+
+  // --- NOVA FUNÇÃO AQUI ---
+  const removeComponent = (id: number) => {
+    setCanvasComponents((prev) =>
+      prev.filter((component) => component.id !== id)
+    );
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ display: "flex", height: "100vh" }}>
+      <Sidebar />
+      <Canvas
+        components={canvasComponents}
+        onDrop={handleDrop}
+        updateComponentContent={updateComponentContent}
+        // --- PASSE A NOVA FUNÇÃO COMO PROP ---
+        removeComponent={removeComponent}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;
